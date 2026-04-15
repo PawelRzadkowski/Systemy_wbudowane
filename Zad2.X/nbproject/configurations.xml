@@ -9,6 +9,7 @@
                    displayName="Important Files"
                    projectFiles="true">
       <itemPath>Makefile</itemPath>
+      <itemPath>Zad2.mc3</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -17,8 +18,7 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
-      <itemPath>newmainXC16.c</itemPath>
-      <itemPath>zad2.c</itemPath>
+      <itemPath>Zad2.c</itemPath>
       <itemPath>Zadzaj.c</itemPath>
       <itemPath>zadzaj1.c</itemPath>
     </logicalFolder>
@@ -202,6 +202,10 @@
       <Tool>
         <property key="firmware.download.all" value="false"/>
       </Tool>
+      <item path="Zadzaj.c" ex="true" overriding="false">
+      </item>
+      <item path="zadzaj1.c" ex="true" overriding="false">
+      </item>
     </conf>
   </confs>
 </configurationDescriptor>
