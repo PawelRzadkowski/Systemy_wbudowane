@@ -1,78 +1,107 @@
-/* Microchip Technology Inc. and its subsidiaries.  You may use this software 
- * and any derivatives exclusively with Microchip products. 
- * 
- * THIS SOFTWARE IS SUPPLIED BY MICROCHIP "AS IS".  NO WARRANTIES, WHETHER 
- * EXPRESS, IMPLIED OR STATUTORY, APPLY TO THIS SOFTWARE, INCLUDING ANY IMPLIED 
- * WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY, AND FITNESS FOR A 
- * PARTICULAR PURPOSE, OR ITS INTERACTION WITH MICROCHIP PRODUCTS, COMBINATION 
- * WITH ANY OTHER PRODUCTS, OR USE IN ANY APPLICATION. 
- *
- * IN NO EVENT WILL MICROCHIP BE LIABLE FOR ANY INDIRECT, SPECIAL, PUNITIVE, 
- * INCIDENTAL OR CONSEQUENTIAL LOSS, DAMAGE, COST OR EXPENSE OF ANY KIND 
- * WHATSOEVER RELATED TO THE SOFTWARE, HOWEVER CAUSED, EVEN IF MICROCHIP HAS 
- * BEEN ADVISED OF THE POSSIBILITY OR THE DAMAGES ARE FORESEEABLE.  TO THE 
- * FULLEST EXTENT ALLOWED BY LAW, MICROCHIP'S TOTAL LIABILITY ON ALL CLAIMS 
- * IN ANY WAY RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF 
- * ANY, THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
- *
- * MICROCHIP PROVIDES THIS SOFTWARE CONDITIONALLY UPON YOUR ACCEPTANCE OF THESE 
- * TERMS. 
- */
+/*******************************************************************************
+Copyright 2016 Microchip Technology Inc. (www.microchip.com)
 
-/* 
- * File:   
- * Author: 
- * Comments:
- * Revision history: 
- */
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-// This is a guard condition so that contents of this file are not included
-// more than once.  
-#ifndef XC_HEADER_TEMPLATE_H
-#define	XC_HEADER_TEMPLATE_H
+    http://www.apache.org/licenses/LICENSE-2.0
 
-#include <xc.h> // include processor files - each processor file is guarded.  
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*******************************************************************************/
 
-// TODO Insert appropriate #include <>
+#ifndef ADC_H
+#define ADC_H
 
-// TODO Insert C++ class definitions if appropriate
+#include <stdint.h>
+#include <stdbool.h>
 
-// TODO Insert declarations
+/*** ADC Channel Definitions *****************************************/
+#define ADC_CHANNEL_POTENTIOMETER ADC_CHANNEL_5
+#define ADC_CHANNEL_TEMPERATURE_SENSOR ADC_CHANNEL_4
 
-// Comment a function and leverage automatic documentation with slash star star
-/**
-    <p><b>Function prototype:</b></p>
-  
-    <p><b>Summary:</b></p>
+typedef enum
+{
+    ADC_CHANNEL_5 = 5,
+    ADC_CHANNEL_4 = 4
+} ADC_CHANNEL;
 
-    <p><b>Description:</b></p>
+typedef enum
+{
+    ADC_CONFIGURATION_DEFAULT
+} ADC_CONFIGURATION;
 
-    <p><b>Precondition:</b></p>
+/*********************************************************************
+* Function: ADC_ReadPercentage(ADC_CHANNEL channel);
+*
+* Overview: Reads the requested ADC channel and returns the percentage
+*            of that conversions result (0-100%).
+*
+* PreCondition: channel is enabled via ADC_ChannelEnable()
+*
+* Input: ADC_CHANNEL channel - enumeration of the ADC channels
+*        available in this demo.  They should be meaningful names and
+*        not the names of the ADC pins on the device (as the demo code
+*        may be ported to other boards).
+*         i.e. ADC_ReadPercentage(ADC_CHANNEL_POTENTIOMETER);
+*
+* Output: uint8_t indicating the percentage of the result 0-100% or
+*         0xFF for an error
+*
+********************************************************************/
+uint8_t ADC_ReadPercentage(ADC_CHANNEL channel);
 
-    <p><b>Parameters:</b></p>
 
-    <p><b>Returns:</b></p>
+/*********************************************************************
+* Function: ADC_Read10bit(ADC_CHANNEL channel);
+*
+* Overview: Reads the requested ADC channel and returns the 10-bit
+*           representation of this data.
+*
+* PreCondition: channel is enabled via ADC_ChannelEnable()
+*
+* Input: ADC_CHANNEL channel - enumeration of the ADC channels
+*        available in this demo.  They should be meaningful names and
+*        not the names of the ADC pins on the device (as the demo code
+*        may be ported to other boards).
+*         i.e. - ADCReadPercentage(ADC_CHANNEL_POTENTIOMETER);
+*
+* Output: uint16_t the right adjusted 10-bit representation of the ADC
+*         channel conversion or 0xFFFF for an error.
+*
+********************************************************************/
+uint16_t ADC_Read10bit(ADC_CHANNEL channel);
 
-    <p><b>Example:</b></p>
-    <code>
- 
-    </code>
+/*********************************************************************
+* Function: bool ADC_ChannelEnable(ADC_CHANNEL channel, ADC_CONFIGURATION configuration);
+*
+* Overview: Enables specified channel
+*
+* PreCondition: none
+*
+* Input: ADC_CHANNEL channel - the channel to enable
+*
+* Output: bool - true if successfully configured.  false otherwise.
+*
+********************************************************************/
+bool ADC_ChannelEnable(ADC_CHANNEL channel);
 
-    <p><b>Remarks:</b></p>
- */
-// TODO Insert declarations or function prototypes (right here) to leverage 
-// live documentation
+/*********************************************************************
+* Function: bool ADC_SetConfiguration(ADC_CONFIGURATION configuration)
+*
+* Overview: Configures the ADC module to specified setting
+*
+* PreCondition: none
+*
+* Input: ADC_CONFIGURATION configuration - the mode in which to run the ADC
+*
+* Output: bool - true if successfully configured.  false otherwise.
+*
+********************************************************************/
+bool ADC_SetConfiguration(ADC_CONFIGURATION configuration);
 
-#ifdef	__cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
-    // TODO If C++ is being used, regular C code needs function names to have C 
-    // linkage so the functions can be used by the c code. 
-
-#ifdef	__cplusplus
-}
-#endif /* __cplusplus */
-
-#endif	/* XC_HEADER_TEMPLATE_H */
-
+#endif  //ADC_H
