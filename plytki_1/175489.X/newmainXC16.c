@@ -23,7 +23,7 @@ int main(void) {
     TRISA = 0x0000;   
     TRISD = 0xFFFF;
     
-    int zmiennaStan = 0;
+    unsigned char zmiennaStan = 0;
     int rd6prev = 0;
     int rd13prev = 0;
     unsigned char licznik = 0;
@@ -35,6 +35,7 @@ int main(void) {
         //zmiana stanu 
         if(buttonrd6 == 1 && rd6prev ==0){
             zmiennaStan++;
+            licznik = 0;
             if(zmiennaStan > 8){
                 zmiennaStan = 0;
             }
@@ -47,6 +48,7 @@ int main(void) {
             else{
                 zmiennaStan--;
             }
+            
         }
         
         rd6prev = buttonrd6;
@@ -55,25 +57,61 @@ int main(void) {
         switch(zmiennaStan){
             case 0:
                 LATA = licznik;
-                
                 licznik++;
                 __delay32(1000000);
                 break;
             case 1:
+                LATA = licznik;
+                licznik--;
+                __delay32(1000000);
                 break;
             case 2:
+                LATA = licznik ^ (licznik >> 1);
+                licznik++;
+                __delay32(1000000);
                 break;
             case 3:
+                LATA = licznik ^ (licznik >> 1);
+                licznik--;
+                __delay32(1000000);
                 break;
             case 4:
+                unsigned char dziesiatki = licznik / 10;
+                unsigned char jednosci = licznik % 10;
+                LATA = (dziesiatki << 4) | jednosci;
+                licznik++;
+                if(licznik > 99) licznik = 0;
+                __delay32(1000000);
                 break;
             case 5:
+                unsigned char dziesiatki = licznik / 10;
+                unsigned char jednosci = licznik % 10;
+                LATA = (dziesiatki << 4) | jednosci;
+                if(licznik == 0) licznik = 99;
+                else licznik--;
+                __delay32(1000000);
                 break;
             case 6:
+                static int pos = 0;
+                static int kierunek = 1;
+                LATA = (1 << pos);
+                pos += kierunek;
+                if(pos == 7 || pos == 0) kierunek *= -1;
+                __delay32(1000000);
                 break;
             case 7:
+                static unsigned char kolejka = 0x01;
+                LATA = kolejka;
+                kolejka <<= 1;
+                if(kolejka == 0) kolejka = 0x01;
+                __delay32(1000000);
                 break;
             case 8:
+                static unsigned char lfsr = 0b111001;
+                unsigned char bit = ((lfsr >> 5) ^ (lfsr >> 4)) & 1;
+                lfsr = (lfsr << 1) | bit;
+                LATA = lfsr;
+                __delay32(1000000);
                 break;
         }
     }
