@@ -58,7 +58,7 @@ int main(void) {
             case 0:
                 LATA = licznik;
                 licznik++;
-                __delay32(1000000);
+                __delay32(100000);
                 break;
             case 1:
                 LATA = licznik;
