@@ -29,51 +29,112 @@
 // Use project enums instead of #define for ON and OFF.
 
 
-int main(void) {
-    
-    unsigned portValue = 0x0001;
-    char current6 = 0, prev6 =0, current7 =0, prev7=0;
-    int value = 1;
-    
-    TRISA = 0x0000;
-    TRISD =0xFFFF;
-    
-    while(1){
-        switch(value){
-            case 1:
-                LATA = portValue;
-                break;
-            case 2:
-                LATA = portValue +1;
-                break;
-            case 3:
-                LATA = portValue +3;
-                break;
-            default:
-                LATA = value;
-        }
-        prev6 = PORTDbits.RD6;
-        prev7 = PORTDbits.RD7;
-        __delay32(150000);
-        current6 = PORTDbits.RD6;
-        current7 = PORTDbits.RD7;
-        
-        if(current6 - prev6 ==1){ //przycisk w gore
-            value --;
-            portValue = 1;
-            if(value <=0){
-                value = 3;
-            }
-        }
-        
-        if (current7 - prev7 == 1){
-            value++;
-            portValue=1;
-            if(value>=4){
-                value = 1;
-        }
-    }
+void ADC_Init(void)
+{
+    AD1PCFGL  = 0xFFFE;
+    AD1CON1   = 0x0000;
+    AD1CON2   = 0x0000;
+    AD1CON3   = 0x0202;
+    AD1CHS0   = 0x0000;
+    AD1CON1bits.ADON = 1;
 }
-    
+ 
+unsigned int ADC_Read(void)
+{
+    AD1CON1bits.SAMP = 1;
+    __delay32(2000);
+    AD1CON1bits.SAMP = 0;
+    while (!AD1CON1bits.DONE);
+    return ADC1BUF0;
+}
+ 
+#define THRESHOLD         512u
+#define ALL_LEDS          0x00FF
+#define ONE_LED           0x0001
+#define LEDS_OFF          0x0000
+#define BLINK_HALF_DELAY  750000UL
+#define BLINK_HALF_TICKS  14u
+ 
+typedef enum {
+    ST_IDLE,
+    ST_BLINK,
+    ST_ALL_ON
+} AlarmState;
+ 
+int main(void)
+{
+    TRISA = 0x0000;
+    LATA  = LEDS_OFF;
+ 
+    TRISBbits.TRISB3 = 1;
+ 
+    ADC_Init();
+ 
+    AlarmState state      = ST_IDLE;
+    unsigned int blinkCnt = 0;
+    unsigned char ledVal  = 0;
+    char prevRB3          = 0;
+    char currRB3          = 0;
+ 
+    while (1)
+    {
+        unsigned int adcVal = ADC_Read();
+ 
+        currRB3 = PORTBbits.RB3;
+        int rb3Pressed = (currRB3 == 1 && prevRB3 == 0);
+        prevRB3 = currRB3;
+ 
+        switch (state)
+        {
+            case ST_IDLE:
+                LATA = LEDS_OFF;
+                if (adcVal > THRESHOLD)
+                {
+                    state    = ST_BLINK;
+                    blinkCnt = 0;
+                    ledVal   = 0;
+                }
+                break;
+ 
+            case ST_BLINK:
+                if (rb3Pressed || adcVal <= THRESHOLD)
+                {
+                    state = ST_IDLE;
+                    LATA  = LEDS_OFF;
+                    break;
+                }
+ 
+                ledVal = !ledVal;
+                LATA   = ledVal ? ONE_LED : LEDS_OFF;
+                __delay32(BLINK_HALF_DELAY);
+ 
+                blinkCnt++;
+                if (blinkCnt >= BLINK_HALF_TICKS)
+                {
+                    state = ST_ALL_ON;
+                    LATA  = ALL_LEDS;
+                }
+                break;
+ 
+            case ST_ALL_ON:
+                if (rb3Pressed || adcVal <= THRESHOLD)
+                {
+                    state = ST_IDLE;
+                    LATA  = LEDS_OFF;
+                }
+                else
+                {
+                    LATA = ALL_LEDS;
+                }
+                break;
+ 
+            default:
+                state = ST_IDLE;
+                break;
+        }
+ 
+        __delay32(20000);
+    }
+ 
     return 0;
 }
