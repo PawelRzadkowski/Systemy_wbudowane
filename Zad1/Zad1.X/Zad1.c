@@ -79,9 +79,10 @@ int main(void) {
                 break;
             }
             case 6:
-                LATA = (1 << pos);
+                LATA = (0b111 << pos);
                 pos += kierunek;
-                if (pos == 7 || pos == 0) kierunek *= -1;
+                if (pos == 5 || pos == 0)
+                kierunek *= -1;
                 break;
             case 7:
                 LATA = kolejka;
@@ -99,7 +100,7 @@ int main(void) {
         prev6  = PORTDbits.RD6;
         prev7 = PORTDbits.RD7;
  
-        __delay32(100000);
+        __delay32(500000);
  
         current6 = PORTDbits.RD6;
         current7 = PORTDbits.RD7;
