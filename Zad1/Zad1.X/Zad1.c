@@ -40,8 +40,11 @@ int main(void) {
  
     int pos = 0;
     int kierunek = 1;
-    unsigned char kolejka = 0x01;
     unsigned char lfsr = 0b111001;
+
+    int fixed_leds = 0;
+    int moving_pos = 0;
+    int target_pos = 7;
  
     while (1) {
  
@@ -85,9 +88,17 @@ int main(void) {
                 kierunek *= -1;
                 break;
             case 7:
-                LATA = kolejka;
-                kolejka <<= 1;
-                if (kolejka == 0) kolejka = 0x01;
+                LATA = fixed_leds | (1 << moving_pos);
+                moving_pos++;
+                if (moving_pos > target_pos) {
+                    fixed_leds |= (1 << target_pos);
+                    target_pos--;
+                    moving_pos = 0;
+                    if (target_pos < 0) {
+                        fixed_leds = 0;
+                        target_pos = 7;
+                    }
+                }
                 break;
             case 8: {
                 unsigned char bit = ((lfsr >> 5) ^ (lfsr >> 4)) & 1;
