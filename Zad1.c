@@ -1,10 +1,3 @@
-/*
- * File:   Zad1.c
- * Author: local
- *
- * Created on April 22, 2026, 12:27 PM
- */
-
 #pragma config POSCMOD = XT
 #pragma config OSCIOFNC = ON
 #pragma config FCKSM = CSDCMD

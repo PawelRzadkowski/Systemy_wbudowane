@@ -4,10 +4,15 @@ Tool Name:
   c:\program files\microchip\xc16\v2.10\bin\bin\..\bin/elf-ld.exe
 
 Command:
+  -TC:\\Users\\local\\AppData\\Local\\Temp\\tmp0000468c.00 \
+  -TC:\\Users\\local\\AppData\\Local\\Temp\\tmp0000468c.01 \
+  -TC:\\Users\\local\\AppData\\Local\\Temp\\tmp0000468c.02 \
+  -TC:\\Users\\local\\AppData\\Local\\Temp\\tmp0000468c.03 \
+  -TC:\\Users\\local\\AppData\\Local\\Temp\\tmp0000468c.04 \
   -p24FJ128GA010 \
   --mdfp=C:/Program Files (x86)/Microchip/MPLABX/v6.20/packs/Microchip/PIC24F-GA-GB_DFP/1.9.336/xc16 \
   -o \
-  dist/default/production/Zad1.X.production.elf \
+  dist/default/debug/Zad1.X.debug.elf \
   -Lc:/program files/microchip/xc16/v2.10/bin/bin/.. \
   -LC:/Program Files (x86)/Microchip/MPLABX/v6.20/packs/Microchip/PIC24F-GA-GB_DFP/1.9.336/xc16/bin/../support/PIC24F/gld \
   -Lc:/program files/microchip/xc16/v2.10/bin/bin/../../lib \
@@ -18,9 +23,12 @@ Command:
   -Lc:/program files/microchip/xc16/v2.10/bin/bin/../../support/dsPIC33C/gld \
   -Lc:/program files/microchip/xc16/v2.10/bin/bin/../../support/dsPIC33E/gld \
   -Lc:/program files/microchip/xc16/v2.10/bin/bin/../../support/dsPIC33F/gld \
-  build/default/production/Zad1.o \
+  build/default/debug/Zad1.o \
   --defsym=__MPLAB_BUILD=1 \
-  -Tp24FJ128GA010.gld.00 \
+  --defsym=__MPLAB_DEBUG=1 \
+  --defsym=__DEBUG=1 \
+  --defsym=__MPLAB_DEBUGGER_PK3=1 \
+  -Tp24FJ128GA010.gld.05 \
   --stack=16 \
   --check-sections \
   --data-init \
@@ -32,10 +40,10 @@ Command:
   --stackguard=16 \
   --no-force-link \
   --smart-io \
-  -Map=dist/default/production/Zad1.X.production.map \
+  -Map=dist/default/debug/Zad1.X.debug.map \
   --report-mem \
   --memorysummary \
-  dist/default/production/memoryfile.xml \
+  dist/default/debug/memoryfile.xml \
   -start-group \
   --library=c99-pic30-elf \
   --library=m-elf \
@@ -53,7 +61,7 @@ c:/program files/microchip/xc16/v2.10/bin/bin/../../lib\libc99-pic30-elf.a(data_
 c:/program files/microchip/xc16/v2.10/bin/bin/../../lib\libc99-pic30-elf.a(crt_start_mode_normal.Meo)
                               (__crt_start_mode_normal)
 c:/program files/microchip/xc16/v2.10/bin/bin/../../lib\libc99-pic30-elf.a(delay32.Meo)
-                              build/default/production/Zad1.o (___delay32)
+                              build/default/debug/Zad1.o (___delay32)
 
 
 xc16-ld 2.10 (B)
@@ -67,18 +75,23 @@ Default Scalar Model: Small
 section                    address   length (PC units)   length (bytes) (dec)
 -------                    -------   -----------------   --------------------
 .text                        0x200                0xce           0x135  (309)
-.text                        0x2ce               0x274           0x3ae  (942)
-.init.delay32                0x542                0x1c            0x2a  (42)
+.text                        0x2ce               0x230           0x348  (840)
+.init.delay32                0x4fe                0x1c            0x2a  (42)
 
-                 Total "program" memory used (bytes):          0x50d  (1293) <1%
+                 Total "program" memory used (bytes):          0x4a7  (1191) <1%
 
 
 "data" Memory  [Origin = 0x800, Length = 0x2000]
 
 section                    address      alignment gaps    total length  (dec)
 -------                    -------      --------------    -------------------
+reserve_data_0x800           0x800                0x20            0x20  (32)
+reserve_data_0x820           0x820                 0x2             0x2  (2)
+reserve_data_0x822           0x822                 0x2             0x2  (2)
+reserve_data_0x824           0x824                 0x2             0x2  (2)
+reserve_data_0x826           0x826                0x2a            0x2a  (42)
 
-                 Total "data" memory used (bytes):              0  (0) 
+                 Total "data" memory used (bytes):           0x50  (80) <1%
 
 
 Dynamic Memory Usage
@@ -86,9 +99,9 @@ Dynamic Memory Usage
 region                     address                      maximum length  (dec)
 ------                     -------                      ---------------------
 heap                             0                                   0  (0)
-stack                        0x800                              0x2000  (8192)
+stack                        0x850                              0x1fb0  (8112)
 
-                 Maximum dynamic memory (bytes):         0x2000  (8192)
+                 Maximum dynamic memory (bytes):         0x1fb0  (8112)
 
 Info: Project is using a large data memory model when small data memory model is sufficient.
 
@@ -101,12 +114,12 @@ External Symbols in Program Memory (by address):
                   0x000252                  __data_init_standard
                   0x0002c8                  __DefaultInterrupt
                   0x0002ce                  _main
-                  0x000542                  ___delay32
+                  0x0004fe                  ___delay32
 
 External Symbols in Program Memory (by name):
 
                   0x0002c8                  __DefaultInterrupt
-                  0x000542                  ___delay32
+                  0x0004fe                  ___delay32
                   0x000252                  __data_init
                   0x000252                  __data_init_standard
                   0x00023c                  __psv_init
@@ -128,8 +141,36 @@ CONFIG1          0x0157fe           0x000002
 
 Linker script and memory map
 
-LOAD build/default/production/Zad1.o
+
+reserve_data_0x800
+                    0x0800         0x20
+                    0x0820                  . = 0x20
+ *fill*             0x0800         0x2000
+
+reserve_data_0x820
+                    0x0820          0x2
+                    0x0822                  . = 0x2
+ *fill*             0x0820          0x200
+
+reserve_data_0x822
+                    0x0822          0x2
+                    0x0824                  . = 0x2
+ *fill*             0x0822          0x200
+
+reserve_data_0x824
+                    0x0824          0x2
+                    0x0826                  . = 0x2
+ *fill*             0x0824          0x200
+
+reserve_data_0x826
+                    0x0826         0x2a
+                    0x0850                  . = 0x2a
+ *fill*             0x0826         0x2a00
+LOAD build/default/debug/Zad1.o
                     0x0001                  __MPLAB_BUILD = 0x1
+                    0x0001                  __MPLAB_DEBUG = 0x1
+                    0x0001                  __DEBUG = 0x1
+                    0x0001                  __MPLAB_DEBUGGER_PK3 = 0x1
 LOAD pPIC24Fxxx
 LOAD c:/program files/microchip/xc16/v2.10/bin/bin/../../lib\libfx-elf.a
                     0x157fc                  __CONFIG2 = 0x157fc
@@ -182,26 +223,26 @@ __CONFIG1
 .comment
  *(.comment)
 
-.debug_info       0x000000        0x4a6
+.debug_info       0x000000        0x479
  *(.debug_info)
- .debug_info      0x000000        0x4a6 build/default/production/Zad1.o
+ .debug_info      0x000000        0x479 build/default/debug/Zad1.o
  *(.gnu.linkonce.wi.*)
 
 .debug_abbrev     0x000000         0xd1
  *(.debug_abbrev)
- .debug_abbrev    0x000000         0xd1 build/default/production/Zad1.o
+ .debug_abbrev    0x000000         0xd1 build/default/debug/Zad1.o
 
-.debug_line       0x000000        0x16e
+.debug_line       0x000000        0x164
  *(.debug_line)
- .debug_line      0x000000        0x16e build/default/production/Zad1.o
+ .debug_line      0x000000        0x164 build/default/debug/Zad1.o
 
 .debug_frame      0x000000         0x2e
  *(.debug_frame)
- .debug_frame     0x000000         0x2e build/default/production/Zad1.o
+ .debug_frame     0x000000         0x2e build/default/debug/Zad1.o
 
 .debug_str        0x000000         0x1e
  *(.debug_str)
- .debug_str       0x000000         0x1e build/default/production/Zad1.o
+ .debug_str       0x000000         0x1e build/default/debug/Zad1.o
 
 .debug_loc
  *(.debug_loc)
@@ -213,7 +254,7 @@ __CONFIG1
                   0x000000         0x1b
  *(.debug_pubnames)
  .debug_pubnames
-                  0x000000         0x1b build/default/production/Zad1.o
+                  0x000000         0x1b build/default/debug/Zad1.o
 
 .debug_ranges
  *(.debug_ranges)
@@ -221,7 +262,7 @@ __CONFIG1
 .debug_aranges    0x000000         0x18
  *(.debug_aranges)
  .debug_aranges
-                  0x000000         0x18 build/default/production/Zad1.o
+                  0x000000         0x18 build/default/debug/Zad1.o
                     0x0000                  WREG0 = 0x0
                     0x0000                  _WREG0 = 0x0
                     0x0002                  WREG1 = 0x2
@@ -799,18 +840,18 @@ LOAD c:/program files/microchip/xc16/v2.10/bin/bin/../../lib\libc99-pic30-elf.a
 LOAD c:/program files/microchip/xc16/v2.10/bin/bin/../../lib\libm-elf.a
 LOAD c:/program files/microchip/xc16/v2.10/bin/bin/../../lib\libc99-elf.a
 END GROUP
-OUTPUT(dist/default/production/Zad1.X.production.elf elf32-pic30)
+OUTPUT(dist/default/debug/Zad1.X.debug.elf elf32-pic30)
 LOAD default_isr
 
 .debug_pubtypes
                   0x000018         0x3e
  .debug_pubtypes
-                  0x000018         0x3e build/default/production/Zad1.o
+                  0x000018         0x3e build/default/debug/Zad1.o
 
 __c30_signature
                   0x000056         0x18
  __c30_signature
-                  0x000056          0x6 build/default/production/Zad1.o
+                  0x000056          0x6 build/default/debug/Zad1.o
  __c30_signature
                   0x00005c          0x6 c:/program files/microchip/xc16/v2.10/bin/bin/../../lib\libc99-pic30-elf.a(crt0_standard.o)
  __c30_signature
@@ -820,15 +861,15 @@ __c30_signature
 
 .config_JTAGEN    0x0157fe          0x2
  .config_JTAGEN
-                  0x0157fe          0x2 build/default/production/Zad1.o
+                  0x0157fe          0x2 build/default/debug/Zad1.o
 
 .config_IESO      0x0157fc          0x2
- .config_IESO     0x0157fc          0x2 build/default/production/Zad1.o
+ .config_IESO     0x0157fc          0x2 build/default/debug/Zad1.o
 
-.text             0x0002ce        0x274
- .text            0x0002ce        0x274 build/default/production/Zad1.o
+.text             0x0002ce        0x230
+ .text            0x0002ce        0x230 build/default/debug/Zad1.o
                   0x0002ce                  _main
 
-.init.delay32     0x000542         0x1c
- .init.delay32    0x000542         0x1c c:/program files/microchip/xc16/v2.10/bin/bin/../../lib\libc99-pic30-elf.a(delay32.Meo)
-                  0x000542                  ___delay32
+.init.delay32     0x0004fe         0x1c
+ .init.delay32    0x0004fe         0x1c c:/program files/microchip/xc16/v2.10/bin/bin/../../lib\libc99-pic30-elf.a(delay32.Meo)
+                  0x0004fe                  ___delay32

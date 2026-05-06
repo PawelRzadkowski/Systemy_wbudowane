@@ -7,7 +7,7 @@ Command:
   -p24FJ128GA010 \
   --mdfp=C:/Program Files (x86)/Microchip/MPLABX/v6.20/packs/Microchip/PIC24F-GA-GB_DFP/1.9.336/xc16 \
   -o \
-  dist/default/production/Zad1.X.production.elf \
+  dist/default/production/Zad_2.X.production.elf \
   -Lc:/program files/microchip/xc16/v2.10/bin/bin/.. \
   -LC:/Program Files (x86)/Microchip/MPLABX/v6.20/packs/Microchip/PIC24F-GA-GB_DFP/1.9.336/xc16/bin/../support/PIC24F/gld \
   -Lc:/program files/microchip/xc16/v2.10/bin/bin/../../lib \
@@ -18,7 +18,8 @@ Command:
   -Lc:/program files/microchip/xc16/v2.10/bin/bin/../../support/dsPIC33C/gld \
   -Lc:/program files/microchip/xc16/v2.10/bin/bin/../../support/dsPIC33E/gld \
   -Lc:/program files/microchip/xc16/v2.10/bin/bin/../../support/dsPIC33F/gld \
-  build/default/production/Zad1.o \
+  build/default/production/Zad2.o \
+  build/default/production/adc.o \
   --defsym=__MPLAB_BUILD=1 \
   -Tp24FJ128GA010.gld.00 \
   --stack=16 \
@@ -32,7 +33,7 @@ Command:
   --stackguard=16 \
   --no-force-link \
   --smart-io \
-  -Map=dist/default/production/Zad1.X.production.map \
+  -Map=dist/default/production/Zad_2.X.production.map \
   --report-mem \
   --memorysummary \
   dist/default/production/memoryfile.xml \
@@ -53,7 +54,9 @@ c:/program files/microchip/xc16/v2.10/bin/bin/../../lib\libc99-pic30-elf.a(data_
 c:/program files/microchip/xc16/v2.10/bin/bin/../../lib\libc99-pic30-elf.a(crt_start_mode_normal.Meo)
                               (__crt_start_mode_normal)
 c:/program files/microchip/xc16/v2.10/bin/bin/../../lib\libc99-pic30-elf.a(delay32.Meo)
-                              build/default/production/Zad1.o (___delay32)
+                              build/default/production/Zad2.o (___delay32)
+c:/program files/microchip/xc16/v2.10/bin/bin/../../lib\libc99-pic30-elf.a(udivsi3.XX_o)
+                              build/default/production/Zad2.o (___udivsi3)
 
 
 xc16-ld 2.10 (B)
@@ -66,19 +69,23 @@ Default Scalar Model: Small
 
 section                    address   length (PC units)   length (bytes) (dec)
 -------                    -------   -----------------   --------------------
-.text                        0x200                0xce           0x135  (309)
-.text                        0x2ce               0x274           0x3ae  (942)
-.init.delay32                0x542                0x1c            0x2a  (42)
+.text                        0x200                0xee           0x165  (357)
+.const                       0x2ee                0x14            0x1e  (30)
+.text                        0x302               0x26e           0x3a5  (933)
+.init.delay32                0x570                0x1c            0x2a  (42)
+.dinit                       0x58c                0x10            0x18  (24)
 
-                 Total "program" memory used (bytes):          0x50d  (1293) <1%
+                 Total "program" memory used (bytes):          0x56a  (1386) 1%
 
 
 "data" Memory  [Origin = 0x800, Length = 0x2000]
 
 section                    address      alignment gaps    total length  (dec)
 -------                    -------      --------------    -------------------
+.nbss                        0x800                   0             0x4  (4)
+.ndata                       0x804                   0             0x2  (2)
 
-                 Total "data" memory used (bytes):              0  (0) 
+                 Total "data" memory used (bytes):            0x6  (6) <1%
 
 
 Dynamic Memory Usage
@@ -86,9 +93,9 @@ Dynamic Memory Usage
 region                     address                      maximum length  (dec)
 ------                     -------                      ---------------------
 heap                             0                                   0  (0)
-stack                        0x800                              0x2000  (8192)
+stack                        0x806                              0x1ffa  (8186)
 
-                 Maximum dynamic memory (bytes):         0x2000  (8192)
+                 Maximum dynamic memory (bytes):         0x1ffa  (8186)
 
 Info: Project is using a large data memory model when small data memory model is sufficient.
 
@@ -100,18 +107,34 @@ External Symbols in Program Memory (by address):
                   0x000252                  __data_init
                   0x000252                  __data_init_standard
                   0x0002c8                  __DefaultInterrupt
-                  0x0002ce                  _main
-                  0x000542                  ___delay32
+                  0x0002ce                  ___udivsi3
+                  0x000302                  _inicjalizacja
+                  0x000322                  _pobierzOpoznienie
+                  0x000366                  _resetujStan
+                  0x000374                  _main
+                  0x000482                  _ADC_ReadPercentage
+                  0x0004b8                  _ADC_Read10bit
+                  0x00050c                  _ADC_ChannelEnable
+                  0x00052c                  _ADC_SetConfiguration
+                  0x000570                  ___delay32
 
 External Symbols in Program Memory (by name):
 
+                  0x00050c                  _ADC_ChannelEnable
+                  0x0004b8                  _ADC_Read10bit
+                  0x000482                  _ADC_ReadPercentage
+                  0x00052c                  _ADC_SetConfiguration
                   0x0002c8                  __DefaultInterrupt
-                  0x000542                  ___delay32
+                  0x000570                  ___delay32
+                  0x0002ce                  ___udivsi3
                   0x000252                  __data_init
                   0x000252                  __data_init_standard
                   0x00023c                  __psv_init
                   0x000200                  __resetPRI
-                  0x0002ce                  _main
+                  0x000302                  _inicjalizacja
+                  0x000374                  _main
+                  0x000322                  _pobierzOpoznienie
+                  0x000366                  _resetujStan
 
 Memory Configuration
 
@@ -128,7 +151,8 @@ CONFIG1          0x0157fe           0x000002
 
 Linker script and memory map
 
-LOAD build/default/production/Zad1.o
+LOAD build/default/production/Zad2.o
+LOAD build/default/production/adc.o
                     0x0001                  __MPLAB_BUILD = 0x1
 LOAD pPIC24Fxxx
 LOAD c:/program files/microchip/xc16/v2.10/bin/bin/../../lib\libfx-elf.a
@@ -147,7 +171,7 @@ LOAD c:/program files/microchip/xc16/v2.10/bin/bin/../../lib\libfx-elf.a
                   0x000002          0x2 SHORT 0x0 ((ABSOLUTE (__reset) >> 0x10) & 0x7f)
                   0x000003          0x2 SHORT 0x0
 
-.text             0x000200         0xce
+.text             0x000200         0xee
  *(.init)
  .init            0x000200         0x4c c:/program files/microchip/xc16/v2.10/bin/bin/../../lib\libc99-pic30-elf.a(crt0_standard.o)
                   0x000200                  __resetPRI
@@ -169,6 +193,8 @@ LOAD c:/program files/microchip/xc16/v2.10/bin/bin/../../lib\libfx-elf.a
                   0x0002cc          0x2 c:/program files/microchip/xc16/v2.10/bin/bin/../../lib\libc99-pic30-elf.a(crt_start_mode_normal.Meo)
                   0x0002cc                  __crt_start_mode
                   0x0002cc                  __crt_start_mode_normal
+ .libm.udivsi3    0x0002ce         0x20 c:/program files/microchip/xc16/v2.10/bin/bin/../../lib\libc99-pic30-elf.a(udivsi3.XX_o)
+                  0x0002ce                  ___udivsi3
 
 usercode
  *(usercode)
@@ -182,26 +208,34 @@ __CONFIG1
 .comment
  *(.comment)
 
-.debug_info       0x000000        0x4a6
+.debug_info       0x000000       0x1080
  *(.debug_info)
- .debug_info      0x000000        0x4a6 build/default/production/Zad1.o
+ .debug_info      0x000000        0x6bb build/default/production/Zad2.o
+ .debug_info      0x0006bb        0x938 build/default/production/adc.o
+ .debug_info      0x000ff3         0x8d c:/program files/microchip/xc16/v2.10/bin/bin/../../lib\libc99-pic30-elf.a(udivsi3.XX_o)
  *(.gnu.linkonce.wi.*)
 
-.debug_abbrev     0x000000         0xd1
+.debug_abbrev     0x000000        0x250
  *(.debug_abbrev)
- .debug_abbrev    0x000000         0xd1 build/default/production/Zad1.o
+ .debug_abbrev    0x000000        0x130 build/default/production/Zad2.o
+ .debug_abbrev    0x000130        0x10c build/default/production/adc.o
+ .debug_abbrev    0x00023c         0x14 c:/program files/microchip/xc16/v2.10/bin/bin/../../lib\libc99-pic30-elf.a(udivsi3.XX_o)
 
-.debug_line       0x000000        0x16e
+.debug_line       0x000000        0x2e5
  *(.debug_line)
- .debug_line      0x000000        0x16e build/default/production/Zad1.o
+ .debug_line      0x000000        0x153 build/default/production/Zad2.o
+ .debug_line      0x000153        0x14d build/default/production/adc.o
+ .debug_line      0x0002a0         0x45 c:/program files/microchip/xc16/v2.10/bin/bin/../../lib\libc99-pic30-elf.a(udivsi3.XX_o)
 
-.debug_frame      0x000000         0x2e
+.debug_frame      0x000000         0xf8
  *(.debug_frame)
- .debug_frame     0x000000         0x2e build/default/production/Zad1.o
+ .debug_frame     0x000000         0x7c build/default/production/Zad2.o
+ .debug_frame     0x00007c         0x7c build/default/production/adc.o
 
-.debug_str        0x000000         0x1e
+.debug_str        0x000000         0x55
  *(.debug_str)
- .debug_str       0x000000         0x1e build/default/production/Zad1.o
+ .debug_str       0x000000         0x14 build/default/production/Zad2.o
+ .debug_str       0x000014         0x41 build/default/production/adc.o
 
 .debug_loc
  *(.debug_loc)
@@ -210,18 +244,24 @@ __CONFIG1
  *(.debug_macinfo)
 
 .debug_pubnames
-                  0x000000         0x1b
+                  0x000000         0xbd
  *(.debug_pubnames)
  .debug_pubnames
-                  0x000000         0x1b build/default/production/Zad1.o
+                  0x000000         0x53 build/default/production/Zad2.o
+ .debug_pubnames
+                  0x000053         0x6a build/default/production/adc.o
 
 .debug_ranges
  *(.debug_ranges)
 
-.debug_aranges    0x000000         0x18
+.debug_aranges    0x000000         0x50
  *(.debug_aranges)
  .debug_aranges
-                  0x000000         0x18 build/default/production/Zad1.o
+                  0x000000         0x18 build/default/production/Zad2.o
+ .debug_aranges
+                  0x000018         0x18 build/default/production/adc.o
+ .debug_aranges
+                  0x000030         0x20 c:/program files/microchip/xc16/v2.10/bin/bin/../../lib\libc99-pic30-elf.a(udivsi3.XX_o)
                     0x0000                  WREG0 = 0x0
                     0x0000                  _WREG0 = 0x0
                     0x0002                  WREG1 = 0x2
@@ -799,36 +839,63 @@ LOAD c:/program files/microchip/xc16/v2.10/bin/bin/../../lib\libc99-pic30-elf.a
 LOAD c:/program files/microchip/xc16/v2.10/bin/bin/../../lib\libm-elf.a
 LOAD c:/program files/microchip/xc16/v2.10/bin/bin/../../lib\libc99-elf.a
 END GROUP
-OUTPUT(dist/default/production/Zad1.X.production.elf elf32-pic30)
+OUTPUT(dist/default/production/Zad_2.X.production.elf elf32-pic30)
 LOAD default_isr
+LOAD data_init
 
 .debug_pubtypes
-                  0x000018         0x3e
+                  0x000050        0x13a
  .debug_pubtypes
-                  0x000018         0x3e build/default/production/Zad1.o
+                  0x000050         0x5d build/default/production/Zad2.o
+ .debug_pubtypes
+                  0x0000ad         0xdd build/default/production/adc.o
 
 __c30_signature
-                  0x000056         0x18
+                  0x00018a         0x24
  __c30_signature
-                  0x000056          0x6 build/default/production/Zad1.o
+                  0x00018a          0x6 build/default/production/Zad2.o
  __c30_signature
-                  0x00005c          0x6 c:/program files/microchip/xc16/v2.10/bin/bin/../../lib\libc99-pic30-elf.a(crt0_standard.o)
+                  0x000190          0x6 build/default/production/adc.o
  __c30_signature
-                  0x000062          0x6 c:/program files/microchip/xc16/v2.10/bin/bin/../../lib\libc99-pic30-elf.a(data_init_standard.o)
+                  0x000196          0x6 c:/program files/microchip/xc16/v2.10/bin/bin/../../lib\libc99-pic30-elf.a(crt0_standard.o)
  __c30_signature
-                  0x000068          0x6 c:/program files/microchip/xc16/v2.10/bin/bin/../../lib\libc99-pic30-elf.a(delay32.Meo)
+                  0x00019c          0x6 c:/program files/microchip/xc16/v2.10/bin/bin/../../lib\libc99-pic30-elf.a(data_init_standard.o)
+ __c30_signature
+                  0x0001a2          0x6 c:/program files/microchip/xc16/v2.10/bin/bin/../../lib\libc99-pic30-elf.a(delay32.Meo)
+ __c30_signature
+                  0x0001a8          0x6 c:/program files/microchip/xc16/v2.10/bin/bin/../../lib\libc99-pic30-elf.a(udivsi3.XX_o)
+
+.nbss               0x0800          0x4
+ .nbss              0x0800          0x4 build/default/production/Zad2.o
+
+.ndata              0x0804          0x2
+ .ndata             0x0804          0x2 build/default/production/Zad2.o
 
 .config_JTAGEN    0x0157fe          0x2
  .config_JTAGEN
-                  0x0157fe          0x2 build/default/production/Zad1.o
+                  0x0157fe          0x2 build/default/production/Zad2.o
 
 .config_IESO      0x0157fc          0x2
- .config_IESO     0x0157fc          0x2 build/default/production/Zad1.o
+ .config_IESO     0x0157fc          0x2 build/default/production/Zad2.o
 
-.text             0x0002ce        0x274
- .text            0x0002ce        0x274 build/default/production/Zad1.o
-                  0x0002ce                  _main
+.const              0x82ee         0x14 load address 0x0002ee  
+ .const             0x82ee         0x14 build/default/production/Zad2.o
 
-.init.delay32     0x000542         0x1c
- .init.delay32    0x000542         0x1c c:/program files/microchip/xc16/v2.10/bin/bin/../../lib\libc99-pic30-elf.a(delay32.Meo)
-                  0x000542                  ___delay32
+.text             0x000302        0x26e
+ .text            0x000302        0x180 build/default/production/Zad2.o
+                  0x000302                  _inicjalizacja
+                  0x000322                  _pobierzOpoznienie
+                  0x000366                  _resetujStan
+                  0x000374                  _main
+ .text            0x000482         0xee build/default/production/adc.o
+                  0x000482                  _ADC_ReadPercentage
+                  0x0004b8                  _ADC_Read10bit
+                  0x00050c                  _ADC_ChannelEnable
+                  0x00052c                  _ADC_SetConfiguration
+
+.init.delay32     0x000570         0x1c
+ .init.delay32    0x000570         0x1c c:/program files/microchip/xc16/v2.10/bin/bin/../../lib\libc99-pic30-elf.a(delay32.Meo)
+                  0x000570                  ___delay32
+
+.dinit            0x00058c         0x10
+ .dinit           0x00058c         0x10 data_init
