@@ -1,0 +1,208 @@
+// PIC24FJ128GA010
+
+#include "xc.h"
+#include "libpic30.h"
+#include "buttons.h"
+#include "lcd.h"
+#include "string.h"
+#include "stdio.h"
+#include "stdbool.h"
+
+void system_init(void)
+{
+    LCD_Initialize();
+
+    BUTTON_Enable(BUTTON_S3);
+    BUTTON_Enable(BUTTON_S4);
+    BUTTON_Enable(BUTTON_S5);
+    BUTTON_Enable(BUTTON_S6);
+}
+
+void show_settings(const char* moc,
+                   char* minutyStr,
+                   char* sekundyStr)
+{
+    LCD_ClearScreen();
+
+    LCD_PutString("Moc: ", 5);
+    LCD_PutString(moc, strlen(moc));
+
+    LCD_PutChar('\n');
+
+    LCD_PutString("Czas: ", 6);
+    LCD_PutString(minutyStr, strlen(minutyStr));
+
+    LCD_PutString(":", 1);
+
+    LCD_PutString(sekundyStr, strlen(sekundyStr));
+}
+
+void display_start_screen(void)
+{
+    LCD_ClearScreen();
+
+    LCD_PutString("KUCHENKA", 8);
+
+    LCD_PutChar('\n');
+
+    LCD_PutString("MIKROFALOWA", 11);
+}
+
+void microwave_menu(void)
+{
+    const char* moc[] = {
+        "800W",
+        "600W",
+        "350W",
+        "200W"
+    };
+
+    int czas = 0;
+
+    int minuty;
+    int sekundy;
+
+    char minutyStr[5];
+    char sekundyStr[5];
+
+    int mocIndex = 0;
+
+    bool czy_wlaczona = false;
+
+    while(1)
+    {
+        minuty = czas / 60;
+        sekundy = czas % 60;
+
+        sprintf(minutyStr, "%02d", minuty);
+        sprintf(sekundyStr, "%02d", sekundy);
+
+        // ekran ustawien
+        if(!czy_wlaczona)
+        {
+            show_settings(moc[mocIndex],
+                          minutyStr,
+                          sekundyStr);
+        }
+
+        // zmiana mocy
+        if(BUTTON_IsPressed(BUTTON_S6))
+        {
+            mocIndex = (mocIndex + 1) % 4;
+
+            while(BUTTON_IsPressed(BUTTON_S6));
+
+            __delay32(300000);
+        }
+
+        // +60 sekund
+        if(BUTTON_IsPressed(BUTTON_S5))
+        {
+            czas += 60;
+
+            if(czas > 5999)
+                czas = 5999;
+
+            while(BUTTON_IsPressed(BUTTON_S5));
+
+            __delay32(300000);
+        }
+
+        // +10 sekund
+        if(BUTTON_IsPressed(BUTTON_S4))
+        {
+            czas += 10;
+
+            if(czas > 5999)
+                czas = 5999;
+
+            while(BUTTON_IsPressed(BUTTON_S4));
+
+            __delay32(300000);
+        }
+
+        // start / stop
+        if(BUTTON_IsPressed(BUTTON_S3))
+        {
+            czy_wlaczona = !czy_wlaczona;
+
+            while(BUTTON_IsPressed(BUTTON_S3));
+
+            __delay32(300000);
+        }
+
+        // odliczanie
+        if(czy_wlaczona && czas > 0)
+        {
+            minuty = czas / 60;
+            sekundy = czas % 60;
+
+            sprintf(minutyStr, "%02d", minuty);
+            sprintf(sekundyStr, "%02d", sekundy);
+
+            LCD_ClearScreen();
+
+            LCD_PutString("Pozostaly czas:", 15);
+
+            LCD_PutChar('\n');
+
+            LCD_PutString(minutyStr,
+                          strlen(minutyStr));
+
+            LCD_PutString(":", 1);
+
+            LCD_PutString(sekundyStr,
+                          strlen(sekundyStr));
+
+            __delay32(2000000);
+
+            czas--;
+
+            if(czas <= 0)
+            {
+                czy_wlaczona = false;
+                czas = 0;
+            }
+        }
+    }
+}
+
+void mainMenu(void)
+{
+    display_start_screen();
+
+    while(1)
+    {
+        if(BUTTON_IsPressed(BUTTON_S5))
+        {
+            while(BUTTON_IsPressed(BUTTON_S5));
+
+            microwave_menu();
+
+            return;
+        }
+
+        if(BUTTON_IsPressed(BUTTON_S4))
+        {
+            while(BUTTON_IsPressed(BUTTON_S4));
+
+            microwave_menu();
+
+            return;
+        }
+    }
+}
+
+int main(void)
+{
+    system_init();
+
+    mainMenu();
+
+    while(1)
+    {
+
+    }
+
+    return 0;
+}

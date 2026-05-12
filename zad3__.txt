@@ -1,0 +1,123 @@
+// PIC24FJ128GA010 Configuration Bit Settings
+
+// CONFIG2
+#pragma config POSCMOD = XT
+#pragma config OSCIOFNC = ON
+#pragma config FCKSM = CSDCMD
+#pragma config FNOSC = PRI
+#pragma config IESO = ON
+
+// CONFIG1
+#pragma config WDTPS = PS32768
+#pragma config FWPSA = PR128
+#pragma config WINDIS = ON
+#pragma config FWDTEN = ON
+#pragma config ICS = PGx2
+#pragma config GWRP = OFF
+#pragma config GCP = OFF
+#pragma config JTAGEN = OFF
+
+#include "xc.h"
+#include "libpic30.h"
+#include "stdio.h"
+#include "adc.h"
+#include "stdbool.h"
+
+void init(void)
+{
+    ADC_SetConfiguration(ADC_CONFIGURATION_DEFAULT);
+    ADC_ChannelEnable(ADC_CHANNEL_POTENTIOMETER);
+
+    // LEDy jako wyjscia
+    TRISA = 0x0000;
+    LATA = 0x0000;
+
+    // RD6 jako wejscie
+    TRISD |= (1 << 6);
+
+    // pull-up dla przycisku
+    CNPU2bits.CN16PUE = 1;
+}
+
+int main(void)
+{
+    init();
+
+    unsigned long adc_value;
+    unsigned long adc_percent;
+
+    unsigned int tryb = 0;
+    // 0 - alarm wylaczony
+    // 1 - miga jedna dioda
+    // 2 - swieca wszystkie diody
+
+    unsigned int timer = 0;
+
+    bool czy_wcisnieto = false;
+
+    while(1)
+    {
+        adc_value = ADC_Read10bit(ADC_CHANNEL_POTENTIOMETER);
+
+        if(adc_value == 0xFFFF)
+        {
+            continue;
+        }
+
+        adc_percent = (adc_value * 100UL) / 1023UL;
+
+        unsigned char stan_przycisku = PORTDbits.RD6;
+
+        // potencjometr ponizej 50% -> reset alarmu
+        if(adc_percent < 50)
+        {
+            tryb = 0;
+            timer = 0;
+            czy_wcisnieto = false;
+
+            LATA = 0x0000;
+        }
+
+        // przycisk wcisniety -> wylaczenie alarmu
+        else if(stan_przycisku == 0)
+        {
+            tryb = 0;
+            czy_wcisnieto = true;
+
+            LATA = 0x0000;
+        }
+
+        // wlaczenie alarmu
+        else if(adc_percent >= 50 &&
+                tryb == 0 &&
+                !czy_wcisnieto)
+        {
+            tryb = 1;
+            timer = 0;
+        }
+
+        // tryb migania
+        if(tryb == 1)
+        {
+            LATA ^= 0x0001;
+
+            __delay32(1000000);
+
+            timer++;
+
+            // po czasie wlacz wszystkie LED
+            if(timer >= 20)
+            {
+                tryb = 2;
+            }
+        }
+
+        // tryb alarmu
+        else if(tryb == 2)
+        {
+            LATA = 0x00FF;
+        }
+    }
+
+    return 0;
+}
