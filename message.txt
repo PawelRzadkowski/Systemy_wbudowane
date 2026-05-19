@@ -1,0 +1,198 @@
+// PIC24FJ128GA010 Configuration Bit Settings
+
+// 'C' source line config statements
+
+// CONFIG2
+#pragma config POSCMOD = XT             // Primary Oscillator Select (XT Oscillator mode selected)
+#pragma config OSCIOFNC = ON            // Primary Oscillator Output Function (OSC2/CLKO/RC15 functions as port I/O (RC15))
+#pragma config FCKSM = CSDCMD           // Clock Switching and Monitor (Clock switching and Fail-Safe Clock Monitor are disabled)
+#pragma config FNOSC = PRI              // Oscillator Select (Primary Oscillator (XT, HS, EC))
+#pragma config IESO = ON                // Internal External Switch Over Mode (IESO mode (Two-Speed Start-up) enabled)
+
+// CONFIG1
+#pragma config WDTPS = PS32768          // Watchdog Timer Postscaler (1:32,768)
+#pragma config FWPSA = PR128            // WDT Prescaler (Prescaler ratio of 1:128)
+#pragma config WINDIS = ON              // Watchdog Timer Window (Standard Watchdog Timer enabled,(Windowed-mode is disabled))
+#pragma config FWDTEN = ON              // Watchdog Timer Enable (Watchdog Timer is enabled)
+#pragma config ICS = PGx2               // Comm Channel Select (Emulator/debugger uses EMUC2/EMUD2)
+#pragma config GWRP = OFF               // General Code Segment Write Protect (Writes to program memory are allowed)
+#pragma config GCP = OFF                // General Code Segment Code Protect (Code protection is disabled)
+#pragma config JTAGEN = OFF             // JTAG Port Enable (JTAG port is disabled)
+
+// #pragma config statements should precede project file includes.
+// Use project enums instead of #define for ON and OFF.
+
+#include <xc.h>
+#include "libpic30.h"
+#include "buttons.h"
+#include "LCD.h"
+#include "adc.h"
+#include <string.h>
+
+volatile unsigned char tick_1s = 0;
+
+unsigned char running = 0;
+unsigned int timeP1;
+unsigned int timeP2;
+int graczIndex = 0;
+
+
+unsigned char lcd_update = 1;
+const char* gracze[] = {"1", "2"};
+
+void __attribute__((interrupt, auto_psv)) _T1Interrupt(void) {
+    IFS0bits.T1IF = 0;
+    tick_1s = 1;
+}
+
+void Timer1_Init(void) {
+    T1CON = 0x0000;
+    TMR1 = 0x0000;
+
+    PR1 = 15625;
+    T1CONbits.TCKPS = 0b11;
+
+    IFS0bits.T1IF = 0;
+    IEC0bits.T1IE = 1;
+
+    T1CONbits.TON = 1;
+}
+
+void time_to_str(unsigned int seconds, char *str) {
+    unsigned int minutes = seconds / 60;
+    unsigned int secs = seconds % 60;
+
+    if (minutes >= 10) {
+        *str++ = (minutes / 10) + '0';
+        *str++ = (minutes % 10) + '0';
+    } else {
+        *str++ = minutes + '0';
+    }
+
+    *str++ = ':';
+    *str++ = (secs / 10) + '0';
+    *str++ = (secs % 10) + '0';
+    *str = '\0';
+}
+
+void system_init(void){
+    ADC_SetConfiguration(ADC_CONFIGURATION_DEFAULT);
+    ADC_ChannelEnable(ADC_CHANNEL_POTENTIOMETER);
+    LCD_Initialize();
+    BUTTON_Enable(BUTTON_S3); // przycisk pierwszego gracza
+    BUTTON_Enable(BUTTON_S4); // przycisk drugiego gracza
+    BUTTON_Enable(BUTTON_S5); // dodaj 10s
+    BUTTON_Enable(BUTTON_S6); // zmiana mocy, dodaj 1min
+
+    Timer1_Init();
+}
+
+void display(void) {
+    char czasStr[6];
+    if (graczIndex == 0) {
+        time_to_str(timeP1, czasStr);
+    }
+    else {
+        time_to_str(timeP2, czasStr);
+    }
+    LCD_ClearScreen();
+    LCD_PutString("Gracz ", 6);
+    LCD_PutString(gracze[graczIndex], strlen(gracze[graczIndex]));
+    LCD_PutChar('\n');
+    LCD_PutString("Czas: ", 6);
+    LCD_PutString(czasStr, strlen(czasStr));
+}
+
+void game_loop(void) {
+    LCD_ClearScreen();
+    while(1) {
+        if (graczIndex == 0) {
+            if (BUTTON_IsPressed(BUTTON_S3)) {
+                graczIndex ^= 1;
+                lcd_update = 1;
+            }
+            if (BUTTON_IsPressed(BUTTON_S6)) {
+                break;
+            }
+            if (tick_1s) {
+                tick_1s = 0;
+
+                if (running && timeP1 > 0) {
+                    timeP1--;
+                    lcd_update = 1;
+                }
+            }
+            if (timeP1 == 0) {
+
+            running = 0;
+
+            LCD_ClearScreen();
+            LCD_PutString("Przegrana", 9);
+            LCD_PutChar('\n');
+            LCD_PutString("gracza 1", 8);
+            __delay32(20000000);
+            break;
+            }
+            if (lcd_update) {
+            lcd_update = 0;
+            display();
+            }
+        }
+        else {
+            if (BUTTON_IsPressed(BUTTON_S4)) {
+                graczIndex ^= 1;
+                lcd_update = 1;
+            }
+            if (BUTTON_IsPressed(BUTTON_S6)) {
+                break;
+            }
+            if (tick_1s) {
+                tick_1s = 0;
+
+                if (running && timeP2 > 0) {
+                    timeP2--;
+                    lcd_update = 1;
+                }
+            }
+            if (timeP2 == 0) {
+
+            running = 0;
+
+            LCD_ClearScreen();
+            LCD_PutString("Przegrana", 9);
+            LCD_PutChar('\n');
+            LCD_PutString("gracza 2", 8);
+            __delay32(20000000);
+            break;
+            }
+            if (lcd_update) {
+            lcd_update = 0;
+            display();
+            }
+        }
+    }
+}
+
+
+int main(void) {
+    unsigned long adc_value;
+    unsigned long prog1 = 1023 / 3;
+    unsigned long prog2 = prog1 * 2;
+    system_init();
+    adc_value = ADC_Read10bit(ADC_CHANNEL_POTENTIOMETER);
+    if (adc_value < prog1) {
+        timeP1 = 60;
+        timeP2 = 60;
+    }
+    else if (adc_value < prog2) {
+        timeP1 = 60*3;
+        timeP2 = 60*3;
+    }
+    else {
+        timeP1 = 60*5;
+        timeP2 = 60*5;
+    }
+    running = 1;
+    game_loop();
+    return 0;
+}
